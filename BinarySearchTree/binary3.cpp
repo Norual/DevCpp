@@ -34,13 +34,6 @@ class TreeType
         void InsertItem(ContactInfo);
         void PrintTree();
         void RemoveItem(string);
-       /* bool IsEmpty()const;
-        int NumberOfNodes()const;
-        void RetrieveItem(ItemType&,bool& found);
-        void InsertItem(ItemType);
-        void DeleteItem(ItemType);
-        void PrintTree() const;
-        */
         private:
         TreeNode* root;
 };
@@ -232,8 +225,8 @@ int main()
                        break;
                   default:  break;
     
-   }
+   } //switch
    
-   }   
+   }   //while
 }
 
