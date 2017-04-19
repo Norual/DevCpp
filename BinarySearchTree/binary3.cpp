@@ -24,12 +24,15 @@ class TreeType
 		friend void Destroy(TreeNode*&);
         friend void Insert(TreeNode*&, ContactInfo, char);
         friend void Print(TreeNode*);
+        friend void Delete(TreeNode*, string);
+        friend ContactInfo LeftMost(TreeNode*);
 
         public:
         TreeType();
         ~TreeType();
         void InsertItem(ContactInfo);
         void PrintTree();
+        void RemoveItem(string);
        /* bool IsEmpty()const;
         int NumberOfNodes()const;
         void RetrieveItem(ItemType&,bool& found);
@@ -49,6 +52,41 @@ void Destroy(TreeNode*& tree)
            Destroy(tree->right);
            delete tree;
      }
+}
+
+void Delete(TreeNode* tree, string Name)
+{
+     int result = tree->info.Name.compare(Name);
+     if (result == 0)
+     {
+        tree->info = LeftMost(tree->right);
+     }
+     else if (result > 0)
+     {
+          Delete(tree->left, Name);
+     }
+     else
+     {
+         Delete(tree->right, Name);
+     }                                  
+}
+
+ContactInfo LeftMost(TreeNode* tree)
+{
+            if (tree->left != NULL)
+            {
+               return LeftMost(tree->left);
+            }
+            else
+            {
+                ContactInfo info;
+                info = tree->info;
+                if (tree->right != NULL)
+                {
+                 tree = tree->right;
+                }                
+                return info;
+            }
 }
 
 void Insert(TreeNode*& tree, ContactInfo item, char ID)
@@ -104,6 +142,10 @@ void TreeType::PrintTree()
 	Print(root);
 }
 
+void TreeType::RemoveItem(string Name)
+{
+     Delete(root, Name);
+}
 
 int main()
 {
@@ -125,12 +167,14 @@ int main()
     cout<<endl;
     
     ContactInfo contact;
-    
+    string name;
     switch(option)
     {
                   case '1': 
                        cout<<"Show All Contacts"<<endl;
                        b3.PrintTree();
+   
+                       getch();
                        break;
                   case '2': 
                        cout<<"Add a Contact"<<endl;
@@ -146,15 +190,19 @@ int main()
                        cout<<"Name: "<< contact.Name<<endl;
                        cout<<"Phone No.: "<< contact.Number<<endl;
                        cout<<"Email Address: "<< contact.Email<<endl;
+   
+                       getch();
                        break;
                   case '3': 
                        cout<<"Remove Contact"<<endl;
+                       cout<<endl<<"Specify the name of the Contact to be Removed: ";
+                       cin>>name;
+                       
+                       b3.RemoveItem(name);
                        break;
                   default:  break;
     
    }
-   
-   getch();
    
    }   
 }
