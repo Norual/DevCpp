@@ -27,6 +27,7 @@ class TreeType
         friend void Print(TreeNode*);
         friend void Delete(TreeNode*&, string);
         friend ContactInfo LeftMost(TreeNode*&);
+        friend void Retrieve(TreeNode*&,string);
 
         public:
         TreeType();
@@ -34,9 +35,34 @@ class TreeType
         void InsertItem(ContactInfo);
         void PrintTree();
         void RemoveItem(string);
+        void SearchItem(string);
         private:
         TreeNode* root;
 };
+
+void Retrieve(TreeNode*& tree, string Name)
+{
+	int result;
+	if (tree != NULL)
+	{
+		result = tree->info.Name.compare(Name);
+		if (result == 0){
+			cout<<endl<<endl;
+			cout<<"Name: "<<tree->info.Name<<endl;
+			cout<<"Phone No.: "<<tree->info.Number<<endl;
+			cout<<"Email Address: "<<tree->info.Email<<endl;
+		} 	
+		else if (result > 0){
+			Retrieve(tree->left,Name);
+		}
+		else{
+			Retrieve(tree->right,Name);
+		}
+	}	
+	else{
+		cout<<endl<<endl<<"Contact could not be found!! Please ensure you have entered the name correctly.";
+	}
+}
 
 void Destroy(TreeNode*& tree)
 {
@@ -46,34 +72,6 @@ void Destroy(TreeNode*& tree)
            Destroy(tree->right);
            delete tree;
      }
-}
-
-void Delete(TreeNode*& tree, string Name)
-{
-     int result = tree->info.Name.compare(Name);
-     if (result == 0)
-     {
-        if (tree->right != NULL)
-        {
-          tree->info = LeftMost(tree->right);  
-        }
-        else if (tree->left != NULL)
-        {
-             tree = tree->left;
-        }     
-        else
-        {   
-            tree = NULL;       
-        }
-     }
-     else if (result > 0)
-     {
-          Delete(tree->left, Name);
-     }
-     else
-     {
-         Delete(tree->right, Name);
-     }                                  
 }
 
 ContactInfo LeftMost(TreeNode*& tree)
@@ -96,6 +94,41 @@ ContactInfo LeftMost(TreeNode*& tree)
                 }                
                 return info;
             }
+}
+
+void Delete(TreeNode*& tree, string Name)
+{	
+	if (tree != NULL){
+	     int result = tree->info.Name.compare(Name);
+	     if (result == 0)
+	     {
+	        if (tree->right != NULL)
+	        {
+	          tree->info = LeftMost(tree->right);  
+	        }
+	        else if (tree->left != NULL)
+	        {
+	             tree = tree->left;
+	        }     
+	        else
+	        {   
+	            tree = NULL;       
+	        }
+	        cout<<endl<<endl<<"Contact successfully removed!!";
+	     }
+	     else if (result > 0)
+	     {
+	          Delete(tree->left, Name);
+	     }
+	     else
+	     {
+	         Delete(tree->right, Name);
+	     }                
+	}
+	else
+	{
+		cout<<endl<<endl<<"Contact could not be found!! Please ensure you have entered the name correctly.";
+	}
 }
 
 void Insert(TreeNode*& tree, ContactInfo item, char ID)
@@ -170,6 +203,10 @@ void TreeType::RemoveItem(string Name)
      Delete(root, Name);
 }
 
+void TreeType::SearchItem(string Name){
+	Retrieve(root, Name);
+}
+
 int main()
 {
    char option = '1';
@@ -182,6 +219,7 @@ int main()
     cout<<"1 - Show All Contacts"<<endl;
     cout<<"2 - Add a Contact"<<endl;
     cout<<"3 - Remove a Contact"<<endl;
+    cout<<"4 - Search a Contact"<<endl;
     cout<<"0 - Exit"<<endl;
     cout<<"What do you want to do? ";
     option = getche();
@@ -194,13 +232,13 @@ int main()
     switch(option)
     {
                   case '1': 
-                       cout<<"Show All Contacts"<<endl;
+                       cout<<"========== Show All Contacts ============"<<endl;
                        b3.PrintTree();
    
                        getch();
                        break;
                   case '2': 
-                       cout<<"Add a Contact"<<endl;
+                       cout<<"========== Add a Contact ========="<<endl;
                        cout<<"Name: ";
                        cin>>contact.Name;
                        cout<<"Phone No.: ";
@@ -217,12 +255,21 @@ int main()
                        getch();
                        break;
                   case '3': 
-                       cout<<"Remove Contact"<<endl;
+                       cout<<"========== Remove Contact ========="<<endl;
                        cout<<endl<<"Specify the name of the Contact to be Removed: ";
                        cin>>name;
                        
                        b3.RemoveItem(name);
+                       getch();
                        break;
+                case '4':
+                	cout<<"========== Search a Contact =========="<<endl;
+                	cout<<endl<<"Specify the name of the contact to be searched: ";
+                	cin>>name;
+                	
+                	b3.SearchItem(name);
+                	getch();
+                	break;
                   default:  break;
     
    } //switch
