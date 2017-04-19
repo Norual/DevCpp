@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <conio.h>
+#include <locale>
 
 using namespace std;
 
@@ -24,8 +25,8 @@ class TreeType
 		friend void Destroy(TreeNode*&);
         friend void Insert(TreeNode*&, ContactInfo, char);
         friend void Print(TreeNode*);
-        friend void Delete(TreeNode*, string);
-        friend ContactInfo LeftMost(TreeNode*);
+        friend void Delete(TreeNode*&, string);
+        friend ContactInfo LeftMost(TreeNode*&);
 
         public:
         TreeType();
@@ -54,12 +55,23 @@ void Destroy(TreeNode*& tree)
      }
 }
 
-void Delete(TreeNode* tree, string Name)
+void Delete(TreeNode*& tree, string Name)
 {
      int result = tree->info.Name.compare(Name);
      if (result == 0)
      {
-        tree->info = LeftMost(tree->right);
+        if (tree->right != NULL)
+        {
+          tree->info = LeftMost(tree->right);  
+        }
+        else if (tree->left != NULL)
+        {
+             tree = tree->left;
+        }     
+        else
+        {   
+            tree = NULL;       
+        }
      }
      else if (result > 0)
      {
@@ -71,7 +83,7 @@ void Delete(TreeNode* tree, string Name)
      }                                  
 }
 
-ContactInfo LeftMost(TreeNode* tree)
+ContactInfo LeftMost(TreeNode*& tree)
 {
             if (tree->left != NULL)
             {
@@ -84,6 +96,10 @@ ContactInfo LeftMost(TreeNode* tree)
                 if (tree->right != NULL)
                 {
                  tree = tree->right;
+                }
+                else
+                {
+                    tree = NULL;
                 }                
                 return info;
             }
@@ -91,6 +107,7 @@ ContactInfo LeftMost(TreeNode* tree)
 
 void Insert(TreeNode*& tree, ContactInfo item, char ID)
 {
+     char option;
      if (tree == NULL)
      {
        tree = new TreeNode;
@@ -98,6 +115,19 @@ void Insert(TreeNode*& tree, ContactInfo item, char ID)
        tree->right = NULL;
        tree->left = NULL;
      }
+     else if (item.Name.compare(tree->info.Name) == 0)
+     {
+          cout<<endl<<endl;
+          cout<<"Name already existed. Would you like to replace it? [y/n]: ";
+          do{
+                      option = toupper(getch());
+                      
+          }while(option != 'Y' and option != 'N');
+          if (option == 'Y')
+          {
+                     tree->info = item;
+          }
+     }                      
      else if (item.Name.compare(tree->info.Name) < 0)
      {
        Insert(tree->left, item, '<');
