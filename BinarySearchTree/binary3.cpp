@@ -1,6 +1,11 @@
 #include <iostream>
 #include <conio.h>
 #include <locale>
+#include <vector>
+#include <sstream>
+#include <algorithm>
+#include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -22,7 +27,7 @@ class TreeType
 {
     friend void Destroy(TreeNode*&);
     friend void Insert(TreeNode*&, ContactInfo);
-    friend void Print(TreeNode*);
+    friend void Print(TreeNode*, string*);
     friend void Delete(TreeNode*&, string);
     friend ContactInfo LeftMost(TreeNode*&);
     friend void Retrieve(TreeNode*&,string);
@@ -161,16 +166,13 @@ void Insert(TreeNode*& tree, ContactInfo item)
     }
 }
 
-void Print(TreeNode* tree)
+void Print(TreeNode* tree, string* info)
 {
     if (tree != NULL)
     {
-        Print(tree->left);
-        cout<<endl<<endl;
-        cout<<"Name: "<<tree->info.Name<<endl;
-        cout<<"Phone No.: "<<tree->info.Number<<endl;
-        cout<<"Email Address: "<<tree->info.Email<<endl;
-        Print(tree->right);
+        Print(tree->left, info);
+        *info = *info + tree->info.Name + ":" + tree->info.Number + ":" + tree->info.Email + ";";
+        Print(tree->right, info);
     }
 }
 
@@ -189,10 +191,72 @@ void TreeType::InsertItem(ContactInfo item)
 {
 	Insert(root, item);
 }
+void justify(string str)
+{
+     
+}
+
+vector<string> explode( string s, char delimiter)
+{
+ vector<string> internal;
+  stringstream ss(s); 
+  string tok;
+  
+  while(getline(ss, tok, delimiter)) {
+    internal.push_back(tok);
+  }
+	return internal;
+}
 
 void TreeType::PrintTree()
 {
-	Print(root);
+     string str = "NAME:PHONE NUMBER:EMAIL ADDRESS;";
+	Print(root, &str);
+	
+	vector<string> contacts = explode(str, ';');
+	vector<string>::iterator itr = contacts.begin();
+	vector<string> contact;
+	vector<string> names;
+	vector<string> numbers;
+	vector<string> email;
+	int i = 0;
+	int maxlength_name = 0;
+	int maxlength_number = 0;
+	int maxlength_email = 0;
+	
+	while(itr != contacts.end()){
+			contact = explode(contacts[i], ':');
+			
+			if (maxlength_name < contact[0].length()) {
+				maxlength_name = contact[0].length();
+			}
+			names.push_back(contact[0]);
+			
+			if (maxlength_number < contact[1].length()) {
+				maxlength_number = contact[1].length();
+			}
+			numbers.push_back(contact[1]);
+			
+			if (maxlength_email < contact[2].length()) {
+				maxlength_email = contact[2].length();
+			}
+			email.push_back(contact[2]);
+						
+			++i;
+			++itr;
+	}
+	
+	i = 0;
+	itr = contacts.begin();
+	
+	while(itr != contacts.end()){
+			if (i==1) cout<<endl;
+			cout<<left<<setw(maxlength_name + 8)<<setfill(' ')<<names[i];
+			cout<<left<<setw(maxlength_number + 8)<<setfill(' ')<<numbers[i];
+			cout<<left<<setw(maxlength_email + 8)<<setfill(' ')<<email[i]<<endl;		
+			++i;
+			++itr;
+	}
 }
 
 void TreeType::RemoveItem(string Name)
@@ -203,6 +267,7 @@ void TreeType::RemoveItem(string Name)
 void TreeType::SearchItem(string Name){
 	Retrieve(root, Name);
 }
+
 
 int main()
 {
@@ -229,7 +294,8 @@ int main()
         switch(option)
         {
             case '1': 
-                cout<<"========== Show All Contacts ============"<<endl;
+                cout<<"========== Show All Contacts ============"<<endl<<endl;
+                
                 b3.PrintTree();
                 
                 getch();
